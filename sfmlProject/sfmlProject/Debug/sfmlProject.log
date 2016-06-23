@@ -1,0 +1,10 @@
+﻿Build started 23/06/2016 13:01:45.
+     1>Project "C:\Users\Sebastian\Documents\GitHub\sfmlProject\sfmlProject\sfmlProject\sfmlProject.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Sebastian\Documents\GitHub\sfmlProject\sfmlProject\Debug\sfmlProject.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\Sebastian\Documents\GitHub\sfmlProject\sfmlProject\sfmlLib\SFML-2.3.2\lib" "sfml-graphics-d.lib" "sfml-system-d.lib" "sfml-window-d.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Sebastian\Documents\GitHub\sfmlProject\sfmlProject\Debug\sfmlProject.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Sebastian\Documents\GitHub\sfmlProject\sfmlProject\Debug\sfmlProject.lib" /MACHINE:X86 Debug\Source.obj
+         sfmlProject.vcxproj -> C:\Users\Sebastian\Documents\GitHub\sfmlProject\sfmlProject\Debug\sfmlProject.exe
+     1>Done Building Project "C:\Users\Sebastian\Documents\GitHub\sfmlProject\sfmlProject\sfmlProject\sfmlProject.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.31
