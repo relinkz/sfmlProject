@@ -3,7 +3,7 @@
 #include "SFML\System.hpp"
 #include "ImageProcessor.h"
 
-void sfmlCheck(); //call this if you want to check if smfl works
+//void sfmlCheck(); //call this if you want to check if smfl works
 
 int main()
 {

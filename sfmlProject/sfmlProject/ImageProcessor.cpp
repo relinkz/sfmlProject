@@ -20,7 +20,7 @@ bool ImageProcessor::initiateEnergyField()
 
 bool ImageProcessor::calculateEnergyValue()
 {
-	
+	return true;
 }
 
 ImageProcessor::ImageProcessor()
