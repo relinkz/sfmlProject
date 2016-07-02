@@ -38,13 +38,15 @@ private:
 
 	bool initiateEnergyField();
 	bool calculateEnergyValue();
+	
+	
 	//findSeam();
 public:
 	ImageProcessor();
 	virtual ~ImageProcessor();
 
 	void initialize(const std::string & fileSrc = "HJoceanSmall.png") throw(...);
-
+	std::string printColumn(const int &columnNr);
 };
 
 #endif

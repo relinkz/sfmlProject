@@ -19,6 +19,8 @@ int main()
 		std::cout << errorMsg << std::endl;
 	}
 
+	std::cout << ImgProcessor.printColumn(0) << std::endl << "done";
+
 	return 0;
 }
 
