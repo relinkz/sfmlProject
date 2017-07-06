@@ -158,11 +158,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="Source.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ImageProcessor.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\resources\HJoceanSmall.png" />
