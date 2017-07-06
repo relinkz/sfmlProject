@@ -1,7 +1,8 @@
 #include "SFML\Window.hpp"
 #include "SFML\Graphics.hpp"
 #include "SFML\System.hpp"
-#include "State.h"
+#include "SelectFile.h"
+#include <cstdio>
 
 int main()
 {
@@ -13,6 +14,9 @@ int main()
 
 	//sebImageProcessor are the FSM, controlling the states
 	State* test = nullptr;
+	test = new SelectFile();
+	
+	std::printf(test->ToString().c_str());
 
 	while (window.isOpen())
 	{
@@ -27,6 +31,8 @@ int main()
 		window.draw(shape);
 		window.display();
 	}
+
+	delete test;
 
 	return 0;
 }

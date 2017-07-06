@@ -10,23 +10,11 @@ State::~State()
 
 }
 
-bool State::Init()
-{
-
-};
-
-bool State::Update()
-{
-
-}
-
-bool State::Shutdown()
-{
-
-}
-
 std::string State::ToString() const
 {
-	std::string toReturn = "Empty";
-	return toReturn;
+	std::string ToReturn = "Empty";
+
+	ToReturn.append(" " + this->ToStringSpecific());
+
+	return ToReturn;
 }
