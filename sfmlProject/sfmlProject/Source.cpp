@@ -1,8 +1,7 @@
 #include "SFML\Window.hpp"
 #include "SFML\Graphics.hpp"
 #include "SFML\System.hpp"
-
-//void sfmlCheck(); //call this if you want to check if smfl works
+#include "State.h"
 
 int main()
 {
@@ -11,6 +10,9 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
 	sf::CircleShape shape(100.f);
 	shape.setFillColor(sf::Color::Green);
+
+	//sebImageProcessor are the FSM, controlling the states
+	State* test = nullptr;
 
 	while (window.isOpen())
 	{
