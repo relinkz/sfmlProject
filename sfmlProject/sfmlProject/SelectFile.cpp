@@ -1,8 +1,14 @@
 #include "SelectFile.h"
 
 
+std::string SelectFile::m_ListFilesInDir()
+{
+	return "NotImplemented";
+}
+
 SelectFile::SelectFile() : State()
 {
+	this->m_ImageDir = "unknown";
 }
 
 
@@ -29,4 +35,9 @@ std::string SelectFile::ToStringSpecific() const
 {
 	std::string ToReturn = "Empty SelectFile String";
 	return ToReturn;
+}
+
+std::string SelectFile::GetImageDir() const
+{
+	return this->m_ImageDir;
 }
