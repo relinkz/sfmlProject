@@ -12,7 +12,7 @@ State::~State()
 
 std::string State::ToString() const
 {
-	std::string ToReturn = "Empty";
+	std::string ToReturn = "STATE: ";
 
 	ToReturn.append(" " + this->ToStringSpecific());
 

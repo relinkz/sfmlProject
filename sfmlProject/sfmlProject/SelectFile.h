@@ -21,7 +21,7 @@ public:
 	virtual ~SelectFile();
 
 	bool Init();
-	bool Update();
+	int Update();
 	bool Shutdown();
 
 	std::string ToStringSpecific() const;

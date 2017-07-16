@@ -21,9 +21,9 @@ bool SelectFile::Init()
 	return true;
 }
 
-bool SelectFile::Update()
+int SelectFile::Update()
 {
-	return true;
+	return 1;
 }
 
 bool SelectFile::Shutdown()
@@ -33,7 +33,7 @@ bool SelectFile::Shutdown()
 
 std::string SelectFile::ToStringSpecific() const
 {
-	std::string ToReturn = "Empty SelectFile String";
+	std::string ToReturn = "SELECT_FILE";
 	return ToReturn;
 }
 

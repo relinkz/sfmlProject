@@ -9,7 +9,7 @@ public:
 	virtual ~State();
 
 	virtual bool Init() = 0;
-	virtual bool Update() = 0;
+	virtual int Update() = 0;
 	virtual bool Shutdown() = 0;
 
 	virtual std::string ToStringSpecific() const = 0;
