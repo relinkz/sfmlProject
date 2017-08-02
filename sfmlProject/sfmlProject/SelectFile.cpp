@@ -21,7 +21,7 @@ bool SelectFile::Init()
 	return true;
 }
 
-int SelectFile::Update()
+int SelectFile::Update(sf::RenderWindow *window)
 {
 	return 1;
 }

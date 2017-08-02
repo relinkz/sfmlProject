@@ -21,7 +21,7 @@ public:
 	virtual ~SelectFile();
 
 	bool Init();
-	int Update();
+	int Update(sf::RenderWindow *window);
 	bool Shutdown();
 
 	std::string ToStringSpecific() const;
