@@ -20,10 +20,11 @@ public:
 	virtual ~ImageAltering();
 
 	bool Init();
-	int Update(sf::RenderWindow *window, bool signal);
+	int Update(sf::RenderWindow *window);
 	bool Shutdown();
 
 	void FindNextSeam();
+	void CarveStream();
 
 	std::string ToStringSpecific() const;
 };

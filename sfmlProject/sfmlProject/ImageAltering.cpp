@@ -4,22 +4,23 @@ int ImageAltering::m_findRootPixel(const sf::Image &img)
 {
 	int AvgEnergy = 0;
 	int bestEnergy = 9999;
-	int tempEnergy = 0;
+	
 
 	int leastImportantPixel = 0;
 
 	//find out the avarage colorvalue of the row
-	for (int k = 0; k < generalSettings::IMAGE_WIDTH; k++)
+	for (int k = 0; k < img.getSize().x; k++)
 	{
 		AvgEnergy += img.getPixel(k, 0).r;
 		AvgEnergy += img.getPixel(k, 0).g;
 		AvgEnergy += img.getPixel(k, 0).b;
 
 	}
-	AvgEnergy /= (generalSettings::IMAGE_WIDTH * 3);
+	AvgEnergy /= (img.getSize().x * 3);
 
-	for (int k = 0; k < generalSettings::IMAGE_WIDTH; k++)
+	for (int k = 0; k < img.getSize().x; k++)
 	{
+		int tempEnergy = 0;
 		tempEnergy += abs(AvgEnergy - img.getPixel(k, 0).r);
 		tempEnergy += abs(AvgEnergy - img.getPixel(k, 0).g);
 		tempEnergy += abs(AvgEnergy - img.getPixel(k, 0).b);
@@ -45,11 +46,16 @@ int ImageAltering::m_nextPixel(int pixelX, int pixelY,const sf::Image & img)
 		AvgEnergy += img.getPixel(k, pixelY + 1).r;
 		AvgEnergy += img.getPixel(k, pixelY + 1).g;
 		AvgEnergy += img.getPixel(k, pixelY + 1).b;
-
 	}
-	AvgEnergy /= (generalSettings::IMAGE_WIDTH * 3);
+	AvgEnergy /= (img.getSize().x * 3);
+	int k;
+	
+	if (pixelX == 0)
+		k = 0;
+	else
+		k = -1;
 
-	for (int k = -1; k < 2; k++)
+	for (k; k < 2; k++)
 	{
 		int tempEnergy = 0;
 
@@ -75,9 +81,10 @@ ImageAltering::ImageAltering()
 	this->m_busy = false;
 
 	std::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/green-sky.jpg";
-	
-	sf::Vector2i ImageSize(generalSettings::IMAGE_WIDTH, generalSettings::IMAGE_HEIGHT);
-	this->m_toAlter->loadFromFile(filename, sf::IntRect(sf::Vector2i(0, 0), ImageSize));
+	//::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/HJoceanSmall.png";
+
+	//sf::Vector2i ImageSize(generalSettings::IMAGE_WIDTH, generalSettings::IMAGE_HEIGHT);
+	this->m_toAlter->loadFromFile(filename);
 
 	this->m_sprite->setTexture(*this->m_toAlter);
 }
@@ -92,13 +99,33 @@ bool ImageAltering::Init()
 	return false;
 }
 
-int ImageAltering::Update(sf::RenderWindow *window, bool signal)
+int ImageAltering::Update(sf::RenderWindow *window)
 {
-	window->draw(*this->m_sprite);
-	if (this->m_busy == false && signal == true)
+	//Update sends true as signal to move forward
+	while (window->isOpen())
 	{
-		this->m_busy = true;
-		this->FindNextSeam();
+		sf::Event event;
+		while (window->pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window->close();
+
+			if (event.type == sf::Event::KeyReleased)
+			{
+				if (event.key.code == sf::Keyboard::N)
+				{
+					this->FindNextSeam();
+				}
+				if (event.key.code == sf::Keyboard::C)
+				{
+					this->CarveStream();
+				}
+			}
+		}
+
+		window->clear();
+		window->draw(*this->m_sprite);
+		window->display();
 	}
 	return 1;
 }
@@ -133,13 +160,41 @@ void ImageAltering::FindNextSeam()
 		img.setPixel(seam[i], i, redPix);
 	}
 
-	//color stream red
-	//img.setPixel(rootPix, 0, redPix);
+	delete[] seam;
+	this->m_toAlter->loadFromImage(img);
+}
 
-	sf::Vector2i ImageSize(generalSettings::IMAGE_WIDTH, generalSettings::IMAGE_HEIGHT);
-	sf::IntRect rect = sf::IntRect(sf::Vector2i(0, 0), ImageSize);
+void ImageAltering::CarveStream()
+{
+	sf::Vector2u sizeOfImage = this->m_sprite->getTexture()->getSize();
+	int* seam = new int[sizeOfImage.y];
 
-	this->m_toAlter->loadFromImage(img, rect);
+	sf::Image img = this->m_sprite->getTexture()->copyToImage();
+	sf::Color redPix = sf::Color::Red;
+
+	int leastImportantPixel = 0;
+
+
+	seam[0] = this->m_findRootPixel(img);
+
+	//traverse from rootPix
+	for (int i = 1; i < img.getSize().y - 1; i++)
+	{
+		seam[i] = this->m_nextPixel(seam[i - 1], i, img);
+	}
+
+	for (int k = 0; k < this->m_toAlter->getSize().y - 1; k++)
+	{
+		for (int i = seam[k]; i < this->m_toAlter->getSize().x; i++)
+		{
+			img.setPixel(i, k, img.getPixel(i + 1, k));
+		}
+		img.setPixel(img.getSize().x - 1, k, sf::Color::Black);
+	}
+	delete[] seam;
+	//sf::IntRect toShrink = sf::IntRect(0,0,img.getSize().x-1, img.getSize().y -1);
+
+	this->m_toAlter->loadFromImage(img);
 }
 
 std::string ImageAltering::ToStringSpecific() const
