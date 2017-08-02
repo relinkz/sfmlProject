@@ -16,7 +16,7 @@ bool ReadFile::Init()
 	return false;
 }
 
-int ReadFile::Update(sf::RenderWindow *window)
+int ReadFile::Update(sf::RenderWindow *window, bool signal)
 {
 	return 1;
 }

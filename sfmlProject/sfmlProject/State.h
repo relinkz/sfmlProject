@@ -14,7 +14,7 @@ public:
 	virtual ~State();
 
 	virtual bool Init() = 0;
-	virtual int Update(sf::RenderWindow *window) = 0;
+	virtual int Update(sf::RenderWindow *window, bool signal) = 0;
 	virtual bool Shutdown() = 0;
 
 	virtual std::string ToStringSpecific() const = 0;

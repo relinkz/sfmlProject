@@ -9,7 +9,7 @@ public:
 	virtual ~ReadFile();
 
 	bool Init();
-	int Update(sf::RenderWindow *window);
+	int Update(sf::RenderWindow *window, bool signal);
 	bool Shutdown();
 
 	std::string ToStringSpecific() const;

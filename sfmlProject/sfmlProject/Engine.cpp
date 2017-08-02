@@ -32,22 +32,29 @@ void Engine::Init()
 void Engine::Run()
 {
 	//Update sends true as signal to move forward
-	if (this->m_states[this->m_activeState]->Update(this->m_window) == true)
-	{
-		while (this->m_window->isOpen())
-		{
-			sf::Event event;
-			while (this->m_window->pollEvent(event))
-			{
-				if (event.type == sf::Event::Closed)
-					this->m_window->close();
-			}
+	bool sendSignal = false;
 
-			this->m_window->clear();
-			this->m_states[this->m_activeState]->Update(this->m_window);
-			this->m_window->display();
+	while (this->m_window->isOpen())
+	{
+		sf::Event event;
+		while (this->m_window->pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				this->m_window->close();
+			
+			if (event.type == sf::Event::KeyReleased)
+			{
+				if (event.key.code == sf::Keyboard::C)
+				{
+					//carve the image
+					sendSignal = true;
+				}
+			}
 		}
 
+		this->m_window->clear();
+		this->m_states[this->m_activeState]->Update(this->m_window, sendSignal);
+		this->m_window->display();
 	}
 }
 

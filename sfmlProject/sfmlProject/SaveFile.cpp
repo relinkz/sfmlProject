@@ -16,7 +16,7 @@ bool SaveFile::Init()
 	return false;
 }
 
-int SaveFile::Update(sf::RenderWindow *window)
+int SaveFile::Update(sf::RenderWindow *window, bool signal)
 {
 	return 1;
 }
