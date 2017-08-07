@@ -15,6 +15,8 @@ private:
 	int m_findRootPixel(const sf::Image &img);
 	int m_nextPixel(int pixelX, int pixelY,const sf::Image &img);
 
+	int width;
+
 public:
 	ImageAltering();
 	virtual ~ImageAltering();

@@ -41,6 +41,28 @@ int ImageAltering::m_nextPixel(int pixelX, int pixelY,const sf::Image & img)
 	int bestEnergy = 9999;
 	int AvgEnergy = 0;
 
+	//for (int k = 0; k < img.getSize().x; k++)
+	//{
+	//	AvgEnergy += img.getPixel(k, pixelY + 1).r;
+	//	AvgEnergy += img.getPixel(k, pixelY + 1).g;
+	//	AvgEnergy += img.getPixel(k, pixelY + 1).b;
+	//}
+	//AvgEnergy /= (img.getSize().x * 3);
+	int k;
+	int goal;
+	
+	if (pixelX == 0)
+		k = 0;
+	else
+		k = -1;
+
+	if (pixelX == img.getSize().x - 1)
+	{
+		goal = 1;
+	}
+	else
+		goal = 2;
+
 	for (int k = 0; k < img.getSize().x; k++)
 	{
 		AvgEnergy += img.getPixel(k, pixelY + 1).r;
@@ -48,14 +70,8 @@ int ImageAltering::m_nextPixel(int pixelX, int pixelY,const sf::Image & img)
 		AvgEnergy += img.getPixel(k, pixelY + 1).b;
 	}
 	AvgEnergy /= (img.getSize().x * 3);
-	int k;
-	
-	if (pixelX == 0)
-		k = 0;
-	else
-		k = -1;
 
-	for (k; k < 2; k++)
+	for (k; k < goal; k++)
 	{
 		int tempEnergy = 0;
 
@@ -87,6 +103,7 @@ ImageAltering::ImageAltering()
 	this->m_toAlter->loadFromFile(filename);
 
 	this->m_sprite->setTexture(*this->m_toAlter);
+	this->width = this->m_toAlter->getSize().x - 1;
 }
 
 
@@ -156,9 +173,11 @@ void ImageAltering::FindNextSeam()
 	//traverse from rootPix
 	for (int i = 1; i < img.getSize().y - 1; i++)
 	{
-		seam[i] = this->m_nextPixel(seam[i - 1], i, img);
+		seam[i] = this->m_nextPixel(seam[i - 1], i - 1, img);
 		img.setPixel(seam[i], i, redPix);
 	}
+	seam[sizeOfImage.y - 1] = this->m_nextPixel(seam[sizeOfImage.y - 2], sizeOfImage.y - 2, img);
+	img.setPixel(seam[sizeOfImage.y - 1], sizeOfImage.y - 1, redPix);
 
 	delete[] seam;
 	this->m_toAlter->loadFromImage(img);
@@ -191,9 +210,14 @@ void ImageAltering::CarveStream()
 		}
 		img.setPixel(img.getSize().x - 1, k, sf::Color::Black);
 	}
-	delete[] seam;
-	//sf::IntRect toShrink = sf::IntRect(0,0,img.getSize().x-1, img.getSize().y -1);
+	seam[sizeOfImage.y - 1] = this->m_nextPixel(seam[sizeOfImage.y - 2], sizeOfImage.y - 2, img);
+	for (int i = seam[sizeOfImage.y - 1]; i < this->m_toAlter->getSize().x- 1; i++)
+	{
+		img.setPixel(i, sizeOfImage.y - 1, img.getPixel(i + 1, sizeOfImage.y - 1));
+	}
+	img.setPixel(img.getSize().x - 1, sizeOfImage.y - 1, sf::Color::Black);
 
+	delete[] seam;
 	this->m_toAlter->loadFromImage(img);
 }
 
