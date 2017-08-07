@@ -1,4 +1,6 @@
 #include "ImageAltering.h"
+#include <chrono>
+#include <fstream>
 
 int ImageAltering::m_findRootPixel(const sf::Image &img)
 {
@@ -99,7 +101,6 @@ ImageAltering::ImageAltering()
 	std::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/green-sky.jpg";
 	//std::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/HJoceanSmall.png";
 
-	//sf::Vector2i ImageSize(generalSettings::IMAGE_WIDTH, generalSettings::IMAGE_HEIGHT);
 	this->m_toAlter->loadFromFile(filename);
 
 	this->m_sprite->setTexture(*this->m_toAlter);
@@ -118,6 +119,8 @@ bool ImageAltering::Init()
 
 int ImageAltering::Update(sf::RenderWindow *window)
 {
+	std::ofstream toFile;
+	toFile.open("exeTime.txt");
 	//Update sends true as signal to move forward
 	while (window->isOpen())
 	{
@@ -140,10 +143,21 @@ int ImageAltering::Update(sf::RenderWindow *window)
 			}
 		}
 
+		for (int i = 0; i < 400; i++)
+		{
+			std::chrono::time_point<std::chrono::system_clock> start, end;
+			start = std::chrono::system_clock::now();
+			this->CarveStream();
+			end = std::chrono::system_clock::now();
+			std::chrono::duration<double> elapsed = end - start;
+			toFile << std::to_string((elapsed.count())) << std::endl;
+		}
+
 		window->clear();
 		window->draw(*this->m_sprite);
 		window->display();
 	}
+	toFile.close();
 	return 1;
 }
 
@@ -201,7 +215,6 @@ void ImageAltering::CarveStream()
 	{
 		seam[i] = this->m_nextPixel(seam[i - 1], i, img);
 	}
-
 	for (int k = 0; k < this->m_toAlter->getSize().y - 1; k++)
 	{
 		for (int i = seam[k]; i < this->width; i++)
@@ -219,6 +232,7 @@ void ImageAltering::CarveStream()
 
 	delete[] seam;
 	this->width--;
+
 	this->m_toAlter->loadFromImage(img);
 }
 
