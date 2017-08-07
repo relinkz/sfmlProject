@@ -97,7 +97,7 @@ ImageAltering::ImageAltering()
 	this->m_busy = false;
 
 	std::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/green-sky.jpg";
-	//::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/HJoceanSmall.png";
+	//std::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/HJoceanSmall.png";
 
 	//sf::Vector2i ImageSize(generalSettings::IMAGE_WIDTH, generalSettings::IMAGE_HEIGHT);
 	this->m_toAlter->loadFromFile(filename);
@@ -165,7 +165,7 @@ void ImageAltering::FindNextSeam()
 
 	int leastImportantPixel = 0;
 	
-	
+
 	seam[0] = this->m_findRootPixel(img);
 
 	img.setPixel(seam[0], 0, redPix);
@@ -204,11 +204,11 @@ void ImageAltering::CarveStream()
 
 	for (int k = 0; k < this->m_toAlter->getSize().y - 1; k++)
 	{
-		for (int i = seam[k]; i < this->m_toAlter->getSize().x; i++)
+		for (int i = seam[k]; i < this->width; i++)
 		{
 			img.setPixel(i, k, img.getPixel(i + 1, k));
 		}
-		img.setPixel(img.getSize().x - 1, k, sf::Color::Black);
+		img.setPixel(this->width, k, sf::Color::Black);
 	}
 	seam[sizeOfImage.y - 1] = this->m_nextPixel(seam[sizeOfImage.y - 2], sizeOfImage.y - 2, img);
 	for (int i = seam[sizeOfImage.y - 1]; i < this->m_toAlter->getSize().x- 1; i++)
@@ -218,6 +218,7 @@ void ImageAltering::CarveStream()
 	img.setPixel(img.getSize().x - 1, sizeOfImage.y - 1, sf::Color::Black);
 
 	delete[] seam;
+	this->width--;
 	this->m_toAlter->loadFromImage(img);
 }
 
