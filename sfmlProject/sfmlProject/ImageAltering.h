@@ -10,6 +10,8 @@ private:
 	sf::Texture* m_toAlter;
 	sf::Sprite* m_sprite;
 
+	int** m_energyField;
+
 	bool m_busy;
 
 	int m_findRootPixel(const sf::Image &img);

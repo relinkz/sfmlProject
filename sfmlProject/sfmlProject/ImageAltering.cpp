@@ -43,13 +43,6 @@ int ImageAltering::m_nextPixel(int pixelX, int pixelY,const sf::Image & img)
 	int bestEnergy = 9999;
 	int AvgEnergy = 0;
 
-	//for (int k = 0; k < img.getSize().x; k++)
-	//{
-	//	AvgEnergy += img.getPixel(k, pixelY + 1).r;
-	//	AvgEnergy += img.getPixel(k, pixelY + 1).g;
-	//	AvgEnergy += img.getPixel(k, pixelY + 1).b;
-	//}
-	//AvgEnergy /= (img.getSize().x * 3);
 	int k;
 	int goal;
 	
@@ -71,7 +64,7 @@ int ImageAltering::m_nextPixel(int pixelX, int pixelY,const sf::Image & img)
 		AvgEnergy += img.getPixel(k, pixelY + 1).g;
 		AvgEnergy += img.getPixel(k, pixelY + 1).b;
 	}
-	AvgEnergy /= (img.getSize().x * 3);
+	AvgEnergy /= (this->width * 3);
 
 	for (k; k < goal; k++)
 	{
@@ -105,8 +98,9 @@ ImageAltering::ImageAltering()
 
 	this->m_sprite->setTexture(*this->m_toAlter);
 	this->width = this->m_toAlter->getSize().x - 1;
-}
 
+	this->m_energyField = nullptr;
+}
 
 ImageAltering::~ImageAltering()
 {
@@ -114,6 +108,8 @@ ImageAltering::~ImageAltering()
 
 bool ImageAltering::Init()
 {
+	this->m_energyField = new int*[this->m_toAlter->getSize().x];
+
 	return false;
 }
 
@@ -143,14 +139,9 @@ int ImageAltering::Update(sf::RenderWindow *window)
 			}
 		}
 
-		for (int i = 0; i < 400; i++)
+		for (int i = 0; i < 600; i++)
 		{
-			std::chrono::time_point<std::chrono::system_clock> start, end;
-			start = std::chrono::system_clock::now();
 			this->CarveStream();
-			end = std::chrono::system_clock::now();
-			std::chrono::duration<double> elapsed = end - start;
-			toFile << std::to_string((elapsed.count())) << std::endl;
 		}
 
 		window->clear();
@@ -205,34 +196,30 @@ void ImageAltering::CarveStream()
 	sf::Image img = this->m_sprite->getTexture()->copyToImage();
 	sf::Color redPix = sf::Color::Red;
 
-	int leastImportantPixel = 0;
-
-
+	//find the first pixel
 	seam[0] = this->m_findRootPixel(img);
 
-	//traverse from rootPix
+	//traverse from rootPix, creating the stream
 	for (int i = 1; i < img.getSize().y - 1; i++)
-	{
 		seam[i] = this->m_nextPixel(seam[i - 1], i, img);
-	}
+
+	//remove stream, move all pixels back one step in array
 	for (int k = 0; k < this->m_toAlter->getSize().y - 1; k++)
 	{
 		for (int i = seam[k]; i < this->width; i++)
-		{
 			img.setPixel(i, k, img.getPixel(i + 1, k));
-		}
 		img.setPixel(this->width, k, sf::Color::Black);
 	}
+
+	//for the last row
 	seam[sizeOfImage.y - 1] = this->m_nextPixel(seam[sizeOfImage.y - 2], sizeOfImage.y - 2, img);
 	for (int i = seam[sizeOfImage.y - 1]; i < this->m_toAlter->getSize().x- 1; i++)
-	{
 		img.setPixel(i, sizeOfImage.y - 1, img.getPixel(i + 1, sizeOfImage.y - 1));
-	}
+
 	img.setPixel(img.getSize().x - 1, sizeOfImage.y - 1, sf::Color::Black);
-
 	delete[] seam;
+	
 	this->width--;
-
 	this->m_toAlter->loadFromImage(img);
 }
 
