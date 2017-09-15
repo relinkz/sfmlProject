@@ -84,6 +84,56 @@ int ImageAltering::m_nextPixel(int pixelX, int pixelY,const sf::Image & img)
 	return leastImportantPixel;
 }
 
+void ImageAltering::m_initEnergyfield(const sf::Image &img)
+{
+	//image storing the energy of the pixel
+	int avgEnergy[generalSettings::IMAGE_HEIGHT];
+
+	//find out the avarage colorvalue of the rows
+	for (int k = 0; k < img.getSize().y; k++)
+	{
+		for (int i = 0; i < img.getSize().x; i++)
+		{
+			avgEnergy[k] += img.getPixel(i, k).r;
+			avgEnergy[k] += img.getPixel(i, k).g;
+			avgEnergy[k] += img.getPixel(i, k).b;
+		}
+
+		//avg
+		avgEnergy[k] /= (img.getSize().x * 3);
+
+		//the average energyvalue is now stored in avgEnergy for each row
+		//The energy is determined by the following simple formula
+		//energy = abs (avg(totColor) - avgColor)
+		for (int i = 0; i < img.getSize().x; i++)
+		{
+			int energy = 0;
+
+			//this are pointers, therfore dereference are needed
+			energy += img.getPixel(i, k).r;
+			energy += img.getPixel(i, k).g;
+			energy += img.getPixel(i, k).b;
+
+			//avg tot color
+			energy /= 3;
+
+			//this->m_energyField[i, k] = 
+
+
+		}
+
+	}
+
+
+
+
+}
+
+void ImageAltering::m_initPowerfield()
+{
+	
+}
+
 ImageAltering::ImageAltering()
 {
 	this->m_toAlter = new sf::Texture();
@@ -99,9 +149,20 @@ ImageAltering::ImageAltering()
 	this->m_sprite->setTexture(*this->m_toAlter);
 	this->width = this->m_toAlter->getSize().x - 1;
 
-	//create energy field
+	//create energy and powerfield
+	//energyfield holds every pixels energy
+	//powerfield is used for finding out seams
 	for (int i = 0; i < generalSettings::IMAGE_WIDTH; i++)
-		this->m_energyField[i] = new int[this->m_toAlter->getSize().x];
+	{
+		this->m_energyField[i] = new int(0);
+		this->m_powerField[i] = new int(0);
+	}
+		
+	//calculate each pixels energy
+	this->m_initEnergyfield();
+	//initialize powerfield, find out each pixels energy
+	this->m_initPowerfield();
+
 
 
 }
@@ -159,6 +220,13 @@ bool ImageAltering::Shutdown()
 		delete this->m_energyField[i];
 
 	return true;
+}
+
+void ImageAltering::updatePowerfield()
+{
+	//first row
+
+	//loop to bottom, it has to know their parent
 }
 
 void ImageAltering::FindNextSeam()
