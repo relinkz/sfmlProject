@@ -99,7 +99,11 @@ ImageAltering::ImageAltering()
 	this->m_sprite->setTexture(*this->m_toAlter);
 	this->width = this->m_toAlter->getSize().x - 1;
 
-	this->m_energyField = nullptr;
+	//create energy field
+	for (int i = 0; i < generalSettings::IMAGE_WIDTH; i++)
+		this->m_energyField[i] = new int[this->m_toAlter->getSize().x];
+
+
 }
 
 ImageAltering::~ImageAltering()
@@ -108,15 +112,14 @@ ImageAltering::~ImageAltering()
 
 bool ImageAltering::Init()
 {
-	this->m_energyField = new int*[this->m_toAlter->getSize().x];
 
-	return false;
+	return true;
 }
 
 int ImageAltering::Update(sf::RenderWindow *window)
 {
-	std::ofstream toFile;
-	toFile.open("exeTime.txt");
+	//std::ofstream toFile;
+	//toFile.open("exeTime.txt");
 	//Update sends true as signal to move forward
 	while (window->isOpen())
 	{
@@ -139,16 +142,11 @@ int ImageAltering::Update(sf::RenderWindow *window)
 			}
 		}
 
-		for (int i = 0; i < 600; i++)
-		{
-			this->CarveStream();
-		}
-
 		window->clear();
 		window->draw(*this->m_sprite);
 		window->display();
 	}
-	toFile.close();
+	//toFile.close();
 	return 1;
 }
 
@@ -156,6 +154,9 @@ bool ImageAltering::Shutdown()
 {
 	delete this->m_toAlter;
 	delete this->m_sprite;
+
+	for (int i = 0; i < generalSettings::IMAGE_WIDTH; i++)
+		delete this->m_energyField[i];
 
 	return true;
 }

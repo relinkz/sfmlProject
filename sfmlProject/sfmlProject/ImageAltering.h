@@ -10,7 +10,7 @@ private:
 	sf::Texture* m_toAlter;
 	sf::Sprite* m_sprite;
 
-	int** m_energyField;
+	int* m_energyField[generalSettings::IMAGE_WIDTH];
 
 	bool m_busy;
 
