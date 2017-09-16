@@ -136,8 +136,40 @@ void ImageAltering::m_initEnergyPicture(const sf::Image &img)
 	this->m_energyPicture = new sf::Image(copy);
 }
 
-void ImageAltering::m_dynamicSeams()
+void ImageAltering::m_energyMapUpdate()
 {
+	int length_x = generalSettings::IMAGE_WIDTH;
+	int length_y = generalSettings::IMAGE_HEIGHT;
+
+	for (int i = 1; i < length_y; i++)
+	{
+		for (int k = 0; k < length_x; k++)
+		{
+			int lowest = 0;
+			int temp = 0;
+			//first in row
+			if (k == 0)
+			{
+				//check above
+				lowest = this->m_energyField[k][i - 1];
+				//check above right
+				temp = this->m_energyField[k + 1][i - 1];
+
+				if (lowest < temp)
+					this->m_energyField[k][i] = lowest;
+				else
+					this->m_energyField[k][i] = temp;
+			}
+
+			if (k == (length_x - 1))
+			{
+				//only above and left
+			}
+			//secoun in row
+		}
+	}
+
+
 }
 
 ImageAltering::ImageAltering()
