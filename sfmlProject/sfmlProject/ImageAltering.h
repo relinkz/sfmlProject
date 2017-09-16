@@ -10,6 +10,11 @@ private:
 	sf::Texture* m_toAlter;
 	sf::Sprite* m_sprite;
 
+	sf::Image* m_picture;
+	sf::Image* m_energyPicture;
+
+	bool m_showEnergy;
+
 	int* m_energyField[generalSettings::IMAGE_WIDTH];
 	int* m_powerField[generalSettings::IMAGE_WIDTH];
 

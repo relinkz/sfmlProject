@@ -92,6 +92,8 @@ void ImageAltering::m_initEnergyfield(const sf::Image &img)
 	int x_length = generalSettings::IMAGE_WIDTH - 1;
 	int y_length = generalSettings::IMAGE_HEIGHT - 1;
 
+	//get image from texture
+	sf::Image copy = this->m_sprite->getTexture()->copyToImage();
 
 	//find out the avarage colorvalue of the rows
 	for (int i = 0; i < y_length; i++)
@@ -126,13 +128,12 @@ void ImageAltering::m_initEnergyfield(const sf::Image &img)
 			energy = abs(energy - avgEnergy[i]);
 
 			this->m_energyField[k][i] = energy;
+			
+			sf::Color pix = sf::Color(energy, energy, energy);
+			copy.setPixel(k,i,pix);
 		}
-
 	}
-
-
-
-
+	this->m_energyPicture = new sf::Image(copy);
 }
 
 void ImageAltering::m_initPowerfield()
@@ -152,8 +153,13 @@ ImageAltering::ImageAltering()
 
 	this->m_toAlter->loadFromFile(filename);
 
+	this->m_picture = nullptr;
+	this->m_picture = new sf::Image(this->m_toAlter->copyToImage());
+
 	this->m_sprite->setTexture(*this->m_toAlter);
 	this->width = this->m_toAlter->getSize().x - 1;
+
+	this->m_showEnergy = false;
 }
 
 ImageAltering::~ImageAltering()
@@ -198,7 +204,13 @@ int ImageAltering::Update(sf::RenderWindow *window)
 			{
 				if (event.key.code == sf::Keyboard::N)
 				{
-					this->FindNextSeam();
+					//swap state
+					this->m_showEnergy = !this->m_showEnergy;
+
+					if (this->m_showEnergy == true)
+						this->m_toAlter->loadFromImage(*this->m_energyPicture);
+					else
+						this->m_toAlter->loadFromImage(*this->m_picture);
 				}
 				if (event.key.code == sf::Keyboard::C)
 				{
