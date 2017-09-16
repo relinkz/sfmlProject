@@ -24,7 +24,7 @@ private:
 
 	void m_initEnergyPicture(const sf::Image &img);
 
-	void m_dynamicSeams();
+	void m_energyMapUpdate();
 
 	int width;
 
