@@ -27,6 +27,8 @@ void Engine::Init()
 	this->m_states[3] = new SaveFile();
 
 	this->m_window = new sf::RenderWindow(sf::VideoMode(generalSettings::IMAGE_WIDTH, generalSettings::IMAGE_HEIGHT), "Seamcarver");
+
+	this->m_states[this->m_activeState]->Init();
 }
 
 void Engine::Run()

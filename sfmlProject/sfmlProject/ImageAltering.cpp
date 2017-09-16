@@ -154,24 +154,6 @@ ImageAltering::ImageAltering()
 
 	this->m_sprite->setTexture(*this->m_toAlter);
 	this->width = this->m_toAlter->getSize().x - 1;
-
-	//create energy and powerfield
-	//energyfield holds every pixels energy
-	//powerfield is used for finding out seams
-	for (int i = 0; i < generalSettings::IMAGE_WIDTH; i++)
-	{
-		this->m_energyField[i] = new int[generalSettings::IMAGE_HEIGHT];
-		this->m_powerField[i] = new int[generalSettings::IMAGE_HEIGHT];
-	}
-		
-	//calculate each pixels energy
-	sf::Image img = this->m_sprite->getTexture()->copyToImage();
-	this->m_initEnergyfield(img);
-	//initialize powerfield, find out each pixels energy
-	//this->m_initPowerfield();
-
-
-
 }
 
 ImageAltering::~ImageAltering()
@@ -180,7 +162,22 @@ ImageAltering::~ImageAltering()
 
 bool ImageAltering::Init()
 {
+	//ällocate memory for energy and powerfield
+	
+	//energyfield holds every pixels energy
+	//powerfield is used for finding out seams
+	for (int i = 0; i < generalSettings::IMAGE_WIDTH; i++)
+	{
+		this->m_energyField[i] = new int[generalSettings::IMAGE_HEIGHT];
+		this->m_powerField[i] = new int[generalSettings::IMAGE_HEIGHT];
+	}
 
+	//calculate each pixels energy
+	sf::Image img = this->m_sprite->getTexture()->copyToImage();
+	this->m_initEnergyfield(img);
+	
+	//initialize powerfield, find out each pixels energy
+	//this->m_initPowerfield();
 	return true;
 }
 
