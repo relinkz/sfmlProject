@@ -84,7 +84,7 @@ int ImageAltering::m_nextPixel(int pixelX, int pixelY,const sf::Image & img)
 	return leastImportantPixel;
 }
 
-void ImageAltering::m_initEnergyfield(const sf::Image &img)
+void ImageAltering::m_initEnergyPicture(const sf::Image &img)
 {
 	//image storing the energy of the pixel
 	int avgEnergy[generalSettings::IMAGE_HEIGHT];
@@ -136,9 +136,8 @@ void ImageAltering::m_initEnergyfield(const sf::Image &img)
 	this->m_energyPicture = new sf::Image(copy);
 }
 
-void ImageAltering::m_initPowerfield()
+void ImageAltering::m_dynamicSeams()
 {
-	
 }
 
 ImageAltering::ImageAltering()
@@ -177,12 +176,11 @@ bool ImageAltering::Init()
 	for (int i = 0; i < generalSettings::IMAGE_WIDTH; i++)
 	{
 		this->m_energyField[i] = new int[generalSettings::IMAGE_HEIGHT];
-		this->m_powerField[i] = new int[generalSettings::IMAGE_HEIGHT];
 	}
 
 	//calculate each pixels energy
 	sf::Image img = this->m_sprite->getTexture()->copyToImage();
-	this->m_initEnergyfield(img);
+	this->m_initEnergyPicture(img);
 	
 	//initialize powerfield, find out each pixels energy
 	//this->m_initPowerfield();
@@ -237,7 +235,6 @@ bool ImageAltering::Shutdown()
 	for (int i = 0; i < generalSettings::IMAGE_WIDTH; i++)
 	{
 		delete[] this->m_energyField[i];
-		delete[] this->m_powerField[i];
 	}
 
 	if (this->m_picture != nullptr)

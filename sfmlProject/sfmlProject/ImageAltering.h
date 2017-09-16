@@ -16,15 +16,15 @@ private:
 	bool m_showEnergy;
 
 	int* m_energyField[generalSettings::IMAGE_WIDTH];
-	int* m_powerField[generalSettings::IMAGE_WIDTH];
 
 	bool m_busy;
 
 	int m_findRootPixel(const sf::Image &img);
 	int m_nextPixel(int pixelX, int pixelY,const sf::Image &img);
 
-	void m_initEnergyfield(const sf::Image &img);
-	void m_initPowerfield();
+	void m_initEnergyPicture(const sf::Image &img);
+
+	void m_dynamicSeams();
 
 	int width;
 
