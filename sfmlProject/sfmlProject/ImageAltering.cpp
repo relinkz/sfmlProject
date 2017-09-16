@@ -154,6 +154,8 @@ ImageAltering::ImageAltering()
 	this->m_toAlter->loadFromFile(filename);
 
 	this->m_picture = nullptr;
+	this->m_energyPicture = nullptr;
+
 	this->m_picture = new sf::Image(this->m_toAlter->copyToImage());
 
 	this->m_sprite->setTexture(*this->m_toAlter);
@@ -236,6 +238,18 @@ bool ImageAltering::Shutdown()
 	{
 		delete[] this->m_energyField[i];
 		delete[] this->m_powerField[i];
+	}
+
+	if (this->m_picture != nullptr)
+	{
+		delete this->m_picture;
+		this->m_picture = nullptr;
+	}
+
+	if (this->m_energyPicture != nullptr)
+	{
+		delete this->m_energyPicture;
+		this->m_energyPicture = nullptr;
 	}
 	return true;
 }
