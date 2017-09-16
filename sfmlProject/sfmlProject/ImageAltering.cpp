@@ -89,37 +89,43 @@ void ImageAltering::m_initEnergyfield(const sf::Image &img)
 	//image storing the energy of the pixel
 	int avgEnergy[generalSettings::IMAGE_HEIGHT];
 
+	int x_length = generalSettings::IMAGE_WIDTH - 1;
+	int y_length = generalSettings::IMAGE_HEIGHT - 1;
+
+
 	//find out the avarage colorvalue of the rows
-	for (int k = 0; k < img.getSize().y; k++)
+	for (int i = 0; i < y_length; i++)
 	{
-		for (int i = 0; i < img.getSize().x; i++)
+		for (int k = 0; k < x_length; k++)
 		{
-			avgEnergy[k] += img.getPixel(i, k).r;
-			avgEnergy[k] += img.getPixel(i, k).g;
-			avgEnergy[k] += img.getPixel(i, k).b;
+			//get the average of the y column
+			avgEnergy[i] += img.getPixel(k, i).r;
+			avgEnergy[i] += img.getPixel(k, i).g;
+			avgEnergy[i] += img.getPixel(k, i).b;
 		}
 
 		//avg
-		avgEnergy[k] /= (img.getSize().x * 3);
+		avgEnergy[i] /= (img.getSize().x * 3);
 
 		//the average energyvalue is now stored in avgEnergy for each row
 		//The energy is determined by the following simple formula
 		//energy = abs (avg(totColor) - avgColor)
-		for (int i = 0; i < img.getSize().x; i++)
+		for (int k = 0; k < x_length; k++)
 		{
 			int energy = 0;
 
 			//this are pointers, therfore dereference are needed
-			energy += img.getPixel(i, k).r;
-			energy += img.getPixel(i, k).g;
-			energy += img.getPixel(i, k).b;
+			energy += img.getPixel(k, i).r;
+			energy += img.getPixel(k, i).g;
+			energy += img.getPixel(k, i).b;
 
 			//avg tot color
 			energy /= 3;
 
-			//this->m_energyField[i, k] = 
+			//abs(avgToTColor - rowAverage)
+			energy = abs(energy - avgEnergy[i]);
 
-
+			this->m_energyField[k][i] = energy;
 		}
 
 	}
@@ -154,14 +160,15 @@ ImageAltering::ImageAltering()
 	//powerfield is used for finding out seams
 	for (int i = 0; i < generalSettings::IMAGE_WIDTH; i++)
 	{
-		this->m_energyField[i] = new int(0);
-		this->m_powerField[i] = new int(0);
+		this->m_energyField[i] = new int[generalSettings::IMAGE_HEIGHT];
+		this->m_powerField[i] = new int[generalSettings::IMAGE_HEIGHT];
 	}
 		
 	//calculate each pixels energy
-	this->m_initEnergyfield();
+	sf::Image img = this->m_sprite->getTexture()->copyToImage();
+	this->m_initEnergyfield(img);
 	//initialize powerfield, find out each pixels energy
-	this->m_initPowerfield();
+	//this->m_initPowerfield();
 
 
 
@@ -217,8 +224,10 @@ bool ImageAltering::Shutdown()
 	delete this->m_sprite;
 
 	for (int i = 0; i < generalSettings::IMAGE_WIDTH; i++)
-		delete this->m_energyField[i];
-
+	{
+		delete[] this->m_energyField[i];
+		delete[] this->m_powerField[i];
+	}
 	return true;
 }
 

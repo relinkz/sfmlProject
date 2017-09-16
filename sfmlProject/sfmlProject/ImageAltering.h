@@ -18,7 +18,7 @@ private:
 	int m_findRootPixel(const sf::Image &img);
 	int m_nextPixel(int pixelX, int pixelY,const sf::Image &img);
 
-	void m_initEnergyfield();
+	void m_initEnergyfield(const sf::Image &img);
 	void m_initPowerfield();
 
 	int width;
