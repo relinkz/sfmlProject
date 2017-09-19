@@ -2,6 +2,25 @@
 #include <chrono>
 #include <fstream>
 
+void ImageAltering::m_printEnergyPathToFile() const
+{
+	std::ofstream toFile;
+	toFile.open("EnergyField.txt");
+
+	std::string toReturn = "";
+	for (int i = 0; i < generalSettings::IMAGE_HEIGHT - 1; i++)
+	{
+		for (int k = 0; k < generalSettings::IMAGE_WIDTH - 1; k++)
+		{
+			toReturn += "[" + std::to_string(this->m_energyField[k][i]) + "]";
+		}
+		toReturn += "\n";
+	}
+
+	toFile << toReturn;
+	toFile.close();
+}
+
 int ImageAltering::m_findRootPixel(const sf::Image &img)
 {
 	int AvgEnergy = 0;
@@ -89,8 +108,8 @@ void ImageAltering::m_initEnergyPicture(const sf::Image &img)
 	//image storing the energy of the pixel
 	int avgEnergy[generalSettings::IMAGE_HEIGHT];
 
-	int x_length = generalSettings::IMAGE_WIDTH - 1;
-	int y_length = generalSettings::IMAGE_HEIGHT - 1;
+	int x_length = generalSettings::IMAGE_WIDTH;
+	int y_length = generalSettings::IMAGE_HEIGHT;
 
 	//get image from texture
 	sf::Image copy = this->m_sprite->getTexture()->copyToImage();
@@ -100,14 +119,17 @@ void ImageAltering::m_initEnergyPicture(const sf::Image &img)
 	{
 		for (int k = 0; k < x_length; k++)
 		{
+			avgEnergy[i] = 0;
 			//get the average of the y column
 			avgEnergy[i] += img.getPixel(k, i).r;
 			avgEnergy[i] += img.getPixel(k, i).g;
 			avgEnergy[i] += img.getPixel(k, i).b;
+
+			avgEnergy[i] /= 3;
 		}
 
 		//avg
-		avgEnergy[i] /= (img.getSize().x * 3);
+		avgEnergy[i] /= (img.getSize().x);
 
 		//the average energyvalue is now stored in avgEnergy for each row
 		//The energy is determined by the following simple formula
@@ -145,31 +167,68 @@ void ImageAltering::m_energyMapUpdate()
 	{
 		for (int k = 0; k < length_x; k++)
 		{
-			int lowest = 0;
-			int temp = 0;
 			//first in row
 			if (k == 0)
 			{
+				int lowest = 0;
+				int temp = 0;
 				//check above
 				lowest = this->m_energyField[k][i - 1];
 				//check above right
 				temp = this->m_energyField[k + 1][i - 1];
 
-				if (lowest < temp)
-					this->m_energyField[k][i] = lowest;
-				else
-					this->m_energyField[k][i] = temp;
+				//make sure lowest energy is saved
+				if (lowest > temp)
+					lowest = temp;
+
+				//add to value
+				this->m_energyField[k][i] += lowest;
+
+
 			}
 
-			if (k == (length_x - 1))
+			else if (k == (length_x - 1))
 			{
-				//only above and left
+				int lowest = 0;
+				int temp = 0;
+
+				//pixel above
+				lowest = this->m_energyField[k][i - 1];
+
+				temp = this->m_energyField[k - 1][i - 1];
+
+				if (lowest > temp)
+					lowest = temp;
+				
+				this->m_energyField[k][i] += lowest;
 			}
-			//secoun in row
+
+			else
+			{
+				int lowest = 0;
+				int temp = 0;
+
+				//top left
+				lowest = this->m_energyField[k - 1][i - 1];
+				
+				//top
+				temp = this->m_energyField[k][i - 1];
+
+				//make sure lowest has less enery of the first 2
+				if (lowest > temp)
+					lowest = temp;
+
+				//get the right pixel
+				temp = this->m_energyField[k + 1][i - 1];
+
+				//save the lowest value
+				if(lowest > temp)
+					lowest = temp;
+
+				this->m_energyField[k][i] += lowest;
+			}
 		}
 	}
-
-
 }
 
 ImageAltering::ImageAltering()
@@ -236,17 +295,29 @@ int ImageAltering::Update(sf::RenderWindow *window)
 			{
 				if (event.key.code == sf::Keyboard::N)
 				{
-					//swap state
+					////swap state
 					this->m_showEnergy = !this->m_showEnergy;
 
 					if (this->m_showEnergy == true)
 						this->m_toAlter->loadFromImage(*this->m_energyPicture);
 					else
 						this->m_toAlter->loadFromImage(*this->m_picture);
+
+					//this->m_printEnergyPathToFile();
+					//printf("%s", "done");
 				}
 				if (event.key.code == sf::Keyboard::C)
 				{
-					this->CarveStream();
+					//this->CarveStream();
+					
+					this->m_energyMapUpdate();
+					//this->m_printEnergyPathToFile();
+					this->FindNextSeam();
+
+					printf("%s", "done");
+					
+					
+					//this->FindNextSeam();
 				}
 			}
 		}
@@ -292,29 +363,90 @@ void ImageAltering::updatePowerfield()
 
 void ImageAltering::FindNextSeam()
 {
-	sf::Vector2u sizeOfImage = this->m_sprite->getTexture()->getSize();
-	int* seam = new int[sizeOfImage.y];
-	
+	int length_y = generalSettings::IMAGE_HEIGHT - 1;
+	int length_x = generalSettings::IMAGE_WIDTH - 1;
+
+
 	sf::Image img = this->m_sprite->getTexture()->copyToImage();
 	sf::Color redPix = sf::Color::Red;
 
-	int leastImportantPixel = 0;
-	
-
-	seam[0] = this->m_findRootPixel(img);
-
-	img.setPixel(seam[0], 0, redPix);
-
-	//traverse from rootPix
-	for (int i = 1; i < img.getSize().y - 1; i++)
+	int lowestVal = 0;
+	int temp;
+	int pos[generalSettings::IMAGE_HEIGHT];
+	for (int i = 1; i < length_x + 1; i++)
 	{
-		seam[i] = this->m_nextPixel(seam[i - 1], i - 1, img);
-		img.setPixel(seam[i], i, redPix);
+		lowestVal = this->m_energyField[0][length_y];
+		pos[0] = 0;
+		temp = this->m_energyField[i][length_y];
+		if (lowestVal > temp)
+		{
+			lowestVal = temp;
+			pos[0] = i;
+		}
 	}
-	seam[sizeOfImage.y - 1] = this->m_nextPixel(seam[sizeOfImage.y - 2], sizeOfImage.y - 2, img);
-	img.setPixel(seam[sizeOfImage.y - 1], sizeOfImage.y - 1, redPix);
 
-	delete[] seam;
+	for (int i = 1; i < length_y + 1; i++)
+	{
+		if (pos[i - 1] == 0)
+		{
+			pos[i] = pos[i - 1] + 1;
+		}
+
+		else if (pos[i - 1] == length_x)
+		{
+		}
+	
+		else
+		{
+			int prev = pos[i - 1];
+			//top left
+			int lowest = this->m_energyField[prev - 1][length_y - i];
+			//wild guess that the top left pixel is least important
+			pos[i] = prev - 1;
+
+
+			//top
+			int temp = this->m_energyField[prev][length_y - i];
+
+			if (lowest > temp)
+			{
+				lowest = temp;
+
+				//just above, that is same x value
+				pos[i] = prev;
+			}
+
+			temp = this->m_energyField[prev + 1][length_y - i];
+
+			if (lowest > temp)
+			{
+				lowest = temp;
+
+				//same pos but top right
+				pos[i] = prev + 1;
+			}
+			sf::Vector2i pixelPos = sf::Vector2i(pos[i], (length_y - i));
+			img.setPixel(pos[i], (length_y - i), redPix);
+		}
+	}
+
+	delete this->m_energyPicture;
+	this->m_energyPicture = new sf::Image(img);
+
+	//remove the seam
+	for (int i = generalSettings::IMAGE_HEIGHT - 1; i >= 0; i--)
+	{
+		int last = 0;
+		for (int k = pos[i]; k < generalSettings::IMAGE_WIDTH - 1; k++)
+		{
+			//revert order
+			//start from pos k
+			img.setPixel(k, i, img.getPixel(k + 1, i));
+			last = k;
+		}
+		img.setPixel(last, i, sf::Color::Black);
+	}
+
 	this->m_toAlter->loadFromImage(img);
 }
 

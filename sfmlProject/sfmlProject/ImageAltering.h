@@ -4,6 +4,7 @@
 #include "State.h"
 #include <stdlib.h>
 
+
 class ImageAltering : public State
 {
 private:
@@ -16,15 +17,17 @@ private:
 	bool m_showEnergy;
 
 	int* m_energyField[generalSettings::IMAGE_WIDTH];
+	void ImageAltering::m_printEnergyPathToFile() const;
 
 	bool m_busy;
 
 	int m_findRootPixel(const sf::Image &img);
 	int m_nextPixel(int pixelX, int pixelY,const sf::Image &img);
-
+	
 	void m_initEnergyPicture(const sf::Image &img);
 
 	void m_energyMapUpdate();
+
 
 	int width;
 

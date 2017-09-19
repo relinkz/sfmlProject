@@ -71,4 +71,9 @@
       <Filter>Header Files\States</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="EnergyField.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
