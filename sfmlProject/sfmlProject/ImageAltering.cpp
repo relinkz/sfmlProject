@@ -160,7 +160,7 @@ void ImageAltering::m_initEnergyPicture(const sf::Image &img)
 
 void ImageAltering::m_energyMapUpdate()
 {
-	int length_x = generalSettings::IMAGE_WIDTH;
+	int length_x = this->width;
 	//int length_x = this->width;
 
 	int length_y = generalSettings::IMAGE_HEIGHT;
@@ -282,6 +282,7 @@ bool ImageAltering::Init()
 
 int ImageAltering::Update(sf::RenderWindow *window)
 {
+	this->width = generalSettings::IMAGE_WIDTH - 1;
 	//std::ofstream toFile;
 	//toFile.open("exeTime.txt");
 	//Update sends true as signal to move forward
@@ -315,6 +316,7 @@ int ImageAltering::Update(sf::RenderWindow *window)
 					this->m_energyMapUpdate();
 					//this->m_printEnergyPathToFile();
 					this->FindNextSeam();
+					this->width--;
 
 					printf("%s", "done");
 					
@@ -366,7 +368,7 @@ void ImageAltering::updatePowerfield()
 void ImageAltering::FindNextSeam()
 {
 	int length_y = generalSettings::IMAGE_HEIGHT - 1;
-	int length_x = generalSettings::IMAGE_WIDTH - 1;
+	int length_x = this->width - 1;
 
 
 	sf::Image img = this->m_sprite->getTexture()->copyToImage();
@@ -375,10 +377,12 @@ void ImageAltering::FindNextSeam()
 	int lowestVal = 0;
 	int temp;
 	int pos[generalSettings::IMAGE_HEIGHT];
+
+	lowestVal = this->m_energyField[0][length_y];
+	pos[0] = 0;
+
 	for (int i = 1; i < length_x + 1; i++)
 	{
-		lowestVal = this->m_energyField[0][length_y];
-		pos[0] = 0;
 		temp = this->m_energyField[i][length_y];
 		if (lowestVal > temp)
 		{
@@ -391,11 +395,42 @@ void ImageAltering::FindNextSeam()
 	{
 		if (pos[i - 1] == 0)
 		{
-			pos[i] = pos[i - 1] + 1;
+			int prev = pos[i - 1];
+			//top left
+			int lowest = this->m_energyField[prev][length_y - i];
+			//wild guess that the top pixel is least important
+			pos[i] = prev;
+
+			//top
+			int temp = this->m_energyField[prev + 1][length_y - i];
+
+			if (lowest > temp)
+			{
+				lowest = temp;
+
+				//just above, that is same x value
+				pos[i] = prev + 1;
+			}
 		}
 
 		else if (pos[i - 1] == length_x)
 		{
+			int prev = pos[i - 1];
+			//top left
+			int lowest = this->m_energyField[prev - 1][length_y - i];
+			//wild guess that the top left pixel is least important
+			pos[i] = prev - 1;
+
+			//top
+			int temp = this->m_energyField[prev][length_y - i];
+
+			if (lowest > temp)
+			{
+				lowest = temp;
+
+				//just above, that is same x value
+				pos[i] = prev;
+			}
 		}
 	
 		else
@@ -405,7 +440,6 @@ void ImageAltering::FindNextSeam()
 			int lowest = this->m_energyField[prev - 1][length_y - i];
 			//wild guess that the top left pixel is least important
 			pos[i] = prev - 1;
-
 
 			//top
 			int temp = this->m_energyField[prev][length_y - i];
