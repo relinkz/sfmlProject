@@ -115,44 +115,76 @@ void ImageAltering::m_initEnergyPicture(const sf::Image &img)
 	sf::Image copy = this->m_sprite->getTexture()->copyToImage();
 
 	//find out the avarage colorvalue of the rows
-	for (int i = 0; i < y_length; i++)
+	for (int i = 1; i < y_length; i++)
 	{
-		for (int k = 0; k < x_length; k++)
-		{
-			avgEnergy[i] = 0;
-			//get the average of the y column
-			avgEnergy[i] += img.getPixel(k, i).r;
-			avgEnergy[i] += img.getPixel(k, i).g;
-			avgEnergy[i] += img.getPixel(k, i).b;
+		//for (int k = 0; k < x_length; k++)
+		//{
+		//	avgEnergy[i] = 0;
+		//	//get the average of the y column
+		//	avgEnergy[i] += img.getPixel(k, i).r;
+		//	avgEnergy[i] += img.getPixel(k, i).g;
+		//	avgEnergy[i] += img.getPixel(k, i).b;
 
-			avgEnergy[i] /= 3;
-		}
+		//	avgEnergy[i] /= 3;
+		//}
 
-		//avg
-		avgEnergy[i] /= (img.getSize().x);
+		////avg
+		//avgEnergy[i] /= (img.getSize().x);
+
+
 
 		//the average energyvalue is now stored in avgEnergy for each row
 		//The energy is determined by the following simple formula
 		//energy = abs (avg(totColor) - avgColor)
+		
 		for (int k = 0; k < x_length; k++)
 		{
-			int energy = 0;
+			if (k == 0)
+			{
 
-			//this are pointers, therfore dereference are needed
-			energy += img.getPixel(k, i).r;
-			energy += img.getPixel(k, i).g;
-			energy += img.getPixel(k, i).b;
+				int energy = 255;
+				this->m_energyField[k][i] = energy;
 
-			//avg tot color
-			energy /= 3;
+				sf::Color pix = sf::Color(energy, energy, energy);
+				copy.setPixel(k, i, pix);
+			}
+			else
+			{
+				int energyN = 0;
+				int energy = 0;
 
-			//abs(avgToTColor - rowAverage)
-			energy = abs(energy - avgEnergy[i]);
+				//neighboor left
+				//energyN += img.getPixel(k - 1, i).r;
+				//energyN += img.getPixel(k - 1, i).g;
+				//energyN += img.getPixel(k - 1, i).b;
 
-			this->m_energyField[k][i] = energy;
-			
-			sf::Color pix = sf::Color(energy, energy, energy);
-			copy.setPixel(k,i,pix);
+				//this are pointers, therfore dereference are needed
+
+				energy += abs(img.getPixel(k, i).r - img.getPixel(k-1, i).r);
+				energy += abs(img.getPixel(k, i).g - img.getPixel(k - 1, i).g);
+				energy += abs(img.getPixel(k, i).b - img.getPixel(k - 1, i).b);
+
+
+				energy += abs(img.getPixel(k, i).r - img.getPixel(k, i - 1).r);
+				energy += abs(img.getPixel(k, i).g - img.getPixel(k, i - 1).g);
+				energy += abs(img.getPixel(k, i).b - img.getPixel(k, i - 1).b);
+
+
+
+				//neighboor right
+				//energyN += img.getPixel(k + 1, i).r;
+				//energyN += img.getPixel(k + 1, i).g;
+				//energyN += img.getPixel(k + 1, i).b;
+
+				//abs(avgToTColor - rowAverage)
+				
+				energy /= 6;
+
+				this->m_energyField[k][i] = energy;
+
+				sf::Color pix = sf::Color(energy, energy, energy);
+				copy.setPixel(k, i, pix);
+			}
 		}
 	}
 	this->m_energyPicture = new sf::Image(copy);
@@ -161,8 +193,6 @@ void ImageAltering::m_initEnergyPicture(const sf::Image &img)
 void ImageAltering::m_energyMapUpdate()
 {
 	int length_x = this->width;
-	//int length_x = this->width;
-
 	int length_y = generalSettings::IMAGE_HEIGHT;
 
 	for (int i = 1; i < length_y; i++)
@@ -242,6 +272,8 @@ ImageAltering::ImageAltering()
 
 	std::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/green-sky.jpg";
 	//std::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/HJoceanSmall.png";
+	//std::string filename = "C:/Users/Sebastian/Documents/GitHub/sfmlProject/sfmlProject/resources/Broadway_tower_grayscale.jpg";
+
 
 	this->m_toAlter->loadFromFile(filename);
 
@@ -311,14 +343,25 @@ int ImageAltering::Update(sf::RenderWindow *window)
 				}
 				if (event.key.code == sf::Keyboard::C)
 				{
+					std::chrono::time_point<std::chrono::system_clock> start, end;
+					start = std::chrono::system_clock::now();
 					//this->CarveStream();
-					
+					//end = std::chrono::system_clock::now();
+
 					this->m_energyMapUpdate();
 					//this->m_printEnergyPathToFile();
+
 					this->FindNextSeam();
 					this->width--;
 
-					printf("%s", "done");
+					
+
+					end = std::chrono::system_clock::now();
+
+					std::chrono::duration<double> elapsed_seconds = end - start;
+					std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+					printf("%s%.6f", "done: ", elapsed_seconds.count());
 					
 					
 					//this->FindNextSeam();
