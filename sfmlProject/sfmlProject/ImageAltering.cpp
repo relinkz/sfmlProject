@@ -161,6 +161,8 @@ void ImageAltering::m_initEnergyPicture(const sf::Image &img)
 void ImageAltering::m_energyMapUpdate()
 {
 	int length_x = generalSettings::IMAGE_WIDTH;
+	//int length_x = this->width;
+
 	int length_y = generalSettings::IMAGE_HEIGHT;
 
 	for (int i = 1; i < length_y; i++)
@@ -434,17 +436,11 @@ void ImageAltering::FindNextSeam()
 	this->m_energyPicture = new sf::Image(img);
 
 	//remove the seam
-	for (int i = generalSettings::IMAGE_HEIGHT - 1; i >= 0; i--)
+	for (int k = 0; k < this->m_toAlter->getSize().y - 1; k++)
 	{
-		int last = 0;
-		for (int k = pos[i]; k < generalSettings::IMAGE_WIDTH - 1; k++)
-		{
-			//revert order
-			//start from pos k
-			img.setPixel(k, i, img.getPixel(k + 1, i));
-			last = k;
-		}
-		img.setPixel(last, i, sf::Color::Black);
+		for (int i = pos[k]; i < this->width; i++)
+			img.setPixel(i, length_y - k, img.getPixel(i + 1, length_y - k));
+		img.setPixel(this->width, k, sf::Color::Black);
 	}
 
 	this->m_toAlter->loadFromImage(img);
